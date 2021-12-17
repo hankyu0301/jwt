@@ -1,0 +1,36 @@
+package org.hankyu.jwt.filter;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class MyFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
+
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse res = (HttpServletResponse) servletResponse;
+
+        //token : "jang"  id,pw 정상적으로 들어와서 로그인이 완료되면 토큰을 발행해서 응답
+        //요청시마다 header에 Authorization에 value값을 토큰으로 가지고옴.
+        //토큰이 넘어 올 때 이 토큰이 내가 만든 토큰이 밎는지 검증해야함 (RSA,HS256)
+        if (req.getMethod().equals("POST")){
+            System.out.println("POST REQUESTD");
+            String headerAuth = req.getHeader("Authorization");
+            System.out.println(headerAuth);
+
+            if(headerAuth.equals("jang")){
+                filterChain.doFilter(req,res);
+            }else {
+                PrintWriter outPrintWriter = res.getWriter();
+                outPrintWriter.println("fail");
+            }
+        }
+
+        System.out.println("Filter1");
+        filterChain.doFilter(req,res);
+    }
+}
